@@ -41,3 +41,12 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_places_str(self):
+        """Test the places string representation"""
+        place = models.Place.objects.create(
+            user=sample_user(),
+            name='BoilerMaker'
+        )
+
+        self.assertEqual(str(place), place.name)

@@ -6,9 +6,11 @@ from whiskey import views
 
 router = DefaultRouter()
 router.register('tags', views.TagViewSet)
+router.register('places', views.PlaceViewSet)
 
 app_name = 'whiskey'
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('', include(router.urls))
 ]
