@@ -60,3 +60,21 @@ class Place(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Whiskey(models.Model):
+    """Whiskey Object"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    brand = models.TextField()
+    style = models.CharField(max_length=255)
+    year = models.IntegerField(null=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    link = models.CharField(max_length=255, blank=True)
+    places = models.ManyToManyField('Place')
+    tag = models.ManyToManyField('Tag')
+
+    def __str__(self):
+        return self.brand

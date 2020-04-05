@@ -50,3 +50,12 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(place), place.name)
+
+    def test_whiskey_str(self):
+        """Test the Whiskey string representation"""
+        whiskey = models.Whiskey.objects.create(
+            user=sample_user(),
+            brand='Jack Daniels',
+            style='Bourbon',
+            )
+        self.assertEqual(str(whiskey), whiskey.brand)
