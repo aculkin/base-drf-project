@@ -2,7 +2,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Tag, Place
+from core.models import Tag, Place, Whiskey
 
 from whiskey import serializers
 
@@ -33,3 +33,15 @@ class PlaceViewSet(BaseWhiskeyAttrViewset):
     """Manage places in the database"""
     queryset = Place.objects.all()
     serializer_class = serializers.PlaceSerializer
+
+
+class WhiskeyViewSet(viewsets.ModelViewSet):
+    """Manage Whiskeys in database"""
+    serializer_class = serializers.WhiskeySerializer
+    queryset = Whiskey.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Retrieve the Whiskeys for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)
