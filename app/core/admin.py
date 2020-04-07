@@ -28,4 +28,4 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Tag)
 admin.site.register(models.Place)
-admin.site.register(models.Whiskey)
+# admin.site.register(models.Whiskey)
