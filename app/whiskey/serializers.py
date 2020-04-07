@@ -42,4 +42,4 @@ class WhiskeySerializer(serializers.ModelSerializer):
 class WhiskeyDetailSerializer(WhiskeySerializer):
     """Serialize a whiskey detail"""
     places = PlaceSerializer(many=True, read_only=True)
-    
+    tag = TagSerializer(many=True, read_only=True)
