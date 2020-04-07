@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Tag, Place  # , Whiskey
+from core.models import Tag, Place, Whiskey
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -21,25 +21,25 @@ class PlaceSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-# class WhiskeySerializer(serializers.ModelSerializer):
-#     """Serialize a Whiskey"""
-#     places = serializers.PrimaryKeyRelatedField(
-#         many=True,
-#         queryset=Place.objects.all()
-#     )
-#     tag = serializers.PrimaryKeyRelatedField(
-#         many=True,
-#         queryset=Tag.objects.all()
-#     )
+class WhiskeySerializer(serializers.ModelSerializer):
+    """Serialize a Whiskey"""
+    places = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Place.objects.all()
+    )
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
 
-#     class Meta:
-#         model = Whiskey
-#         fields = ('id', 'brand', 'style', 'year',
-#                   'price', 'link', 'tag', 'places')
-#         read_only_fields = ('id',)
+    class Meta:
+        model = Whiskey
+        fields = ('id', 'brand', 'style', 'year',
+                  'price', 'link', 'tags', 'places')
+        read_only_fields = ('id',)
 
 
-# class WhiskeyDetailSerializer(WhiskeySerializer):
-#     """Serialize a whiskey detail"""
-#     places = PlaceSerializer(many=True, read_only=True)
-#     tag = TagSerializer(many=True, read_only=True)
+class WhiskeyDetailSerializer(WhiskeySerializer):
+    """Serialize a whiskey detail"""
+    places = PlaceSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)

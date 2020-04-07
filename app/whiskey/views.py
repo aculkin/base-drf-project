@@ -2,7 +2,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Tag, Place  # , Whiskey
+from core.models import Tag, Place, Whiskey
 
 from whiskey import serializers
 
@@ -35,20 +35,20 @@ class PlaceViewSet(BaseWhiskeyAttrViewset):
     serializer_class = serializers.PlaceSerializer
 
 
-# class WhiskeyViewSet(viewsets.ModelViewSet):
-#     """Manage Whiskeys in database"""
-#     serializer_class = serializers.WhiskeySerializer
-#     queryset = Whiskey.objects.all()
-#     authentication_classes = (TokenAuthentication,)
-#     permission_classes = (IsAuthenticated,)
+class WhiskeyViewSet(viewsets.ModelViewSet):
+    """Manage Whiskeys in database"""
+    serializer_class = serializers.WhiskeySerializer
+    queryset = Whiskey.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
-#     def get_queryset(self):
-#         """Retrieve the Whiskeys for the authenticated user"""
-#         return self.queryset.filter(user=self.request.user)
+    def get_queryset(self):
+        """Retrieve the Whiskeys for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)
 
-#     def get_serializer_class(self):
-#         """Return appropiate serializer class"""
-#         if self.action == 'retrieve':
-#             return serializers.WhiskeyDetailSerializer
+    def get_serializer_class(self):
+        """Return appropiate serializer class"""
+        if self.action == 'retrieve':
+            return serializers.WhiskeyDetailSerializer
 
-#         return self.serializer_class
+        return self.serializer_class
