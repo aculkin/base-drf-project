@@ -37,3 +37,9 @@ class WhiskeySerializer(serializers.ModelSerializer):
         fields = ('id', 'brand', 'style', 'year',
                   'price', 'link', 'tag', 'places')
         read_only_fields = ('id',)
+
+
+class WhiskeyDetailSerializer(WhiskeySerializer):
+    """Serialize a whiskey detail"""
+    places = PlaceSerializer(many=True, read_only=True)
+    
