@@ -105,3 +105,55 @@ class PrivateWhiskeyAPITest(TestCase):
 
         serializer = WhiskeyDetailSerializer(whiskey)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_basic_whiskey(self):
+        """Test creating a whiskey"""
+        payload = {
+            'brand': 'Jack Daniels',
+            'style': 'Whiskey'
+        }
+        res = self.client.post(WHISKEY_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        whiskey = Whiskey.objects.get(id=res.data['id'])
+        for key in payload.keys():
+            self.assertEqual(payload[key], getattr(whiskey, key))
+
+    def test_create_whiskey_with_tags(self):
+        """Test creating a whiskey with tags"""
+        tag1 = sample_tag(user=self.user, name='Fire')
+        tag2 = sample_tag(user=self.user, name='Sweet')
+
+        payload = {
+            'brand': 'Jack Daniel',
+            'style': 'Bourbon',
+            'tags': {tag1.id, tag2.id}
+        }
+
+        res = self.client.post(WHISKEY_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        whiskey = Whiskey.objects.get(id=res.data['id'])
+        tags = whiskey.tags.all()
+        self.assertEqual(tags.count(), 2)
+        self.assertIn(tag1, tags)
+        self.assertIn(tag2, tags)
+
+    def test_create_whiskey_with_place(self):
+        """Test creating whiskey with place"""
+        place1 = sample_place(user=self.user, name='Campbell Brewery')
+        place2 = sample_place(user=self.user, name='BoilerMaker')
+
+        payload = {
+            'brand': 'Woodford Reserve',
+            'style': 'Bourbon',
+            'places': {place1.id, place2.id}
+        }
+        res = self.client.post(WHISKEY_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        whiskey = Whiskey.objects.get(id=res.data['id'])
+        places = whiskey.places.all()
+        self.assertEqual(places.count(), 2)
+        self.assertIn(place1, places)
+        self.assertIn(place2, places)

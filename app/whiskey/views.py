@@ -52,3 +52,7 @@ class WhiskeyViewSet(viewsets.ModelViewSet):
             return serializers.WhiskeyDetailSerializer
 
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new whiskey"""
+        serializer.save(user=self.request.user)
