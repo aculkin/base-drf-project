@@ -62,19 +62,19 @@ class Place(models.Model):
         return self.name
 
 
-# class Whiskey(models.Model):
-#     """Whiskey Object"""
-#     user = models.ForeignKey(
-#         settings.AUTH_USER_MODEL,
-#         on_delete=models.CASCADE
-#     )
-#     brand = models.TextField()
-#     style = models.CharField(max_length=255)
-#     year = models.IntegerField(null=True)
-#     price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
-#     link = models.CharField(max_length=255, blank=True)
-#     places = models.ManyToManyField('Place')
-#     tag = models.ManyToManyField('Tag')
+class Whiskey(models.Model):
+    """Whiskey Object"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    brand = models.CharField(max_length=255)
+    style = models.CharField(max_length=255)
+    year = models.CharField(max_length=4, blank=True)
+    price = models.CharField(max_length=10, blank=True)
+    link = models.CharField(max_length=255, blank=True)
+    places = models.ManyToManyField('Place')
+    tags = models.ManyToManyField('Tag')
 
-#     def __str__(self):
-#         return self.brand
+    def __str__(self):
+        return self.brand
