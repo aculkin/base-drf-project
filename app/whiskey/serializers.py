@@ -34,8 +34,10 @@ class WhiskeySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Whiskey
-        fields = ('id', 'brand', 'style', 'year',
-                  'price', 'link', 'tags', 'places')
+        fields = (
+            'id', 'brand', 'style', 'year',
+            'price', 'link', 'tags', 'places'
+        )
         read_only_fields = ('id',)
 
 

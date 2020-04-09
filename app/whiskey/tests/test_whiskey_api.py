@@ -157,3 +157,36 @@ class PrivateWhiskeyAPITest(TestCase):
         self.assertEqual(places.count(), 2)
         self.assertIn(place1, places)
         self.assertIn(place2, places)
+
+    def test_update_whiskey_partial(self):
+        """Test updating a whiskey with patch"""
+        whiskey = sample_whiskey(user=self.user)
+        whiskey.tags.add(sample_tag(user=self.user))
+        new_tag = sample_tag(user=self.user, name='Fire')
+
+        payload = {'brand': 'Woodford Reserve', 'tags': [new_tag.id]}
+        url = detail_url(whiskey.id)
+        self.client.patch(url, payload)
+
+        whiskey.refresh_from_db()
+        self.assertEqual(whiskey.brand, payload['brand'])
+        tags = whiskey.tags.all()
+        self.assertEqual(len(tags), 1)
+        self.assertIn(new_tag, tags)
+
+    def test_update_whiskey_full(self):
+        """Test updating a whiskey with put"""
+        whiskey = sample_whiskey(user=self.user)
+        whiskey.tags.add(sample_tag(user=self.user))
+        payload = {
+            'brand': 'Jack Daniels',
+            'style': 'Whiskey',
+        }
+        url = detail_url(whiskey.id)
+        self.client.put(url, payload)
+
+        whiskey.refresh_from_db()
+        self.assertEqual(whiskey.brand, payload['brand'])
+        self.assertEqual(whiskey.style, payload['style'])
+        tags = whiskey.tags.all()
+        self.assertEqual(len(tags), 0)

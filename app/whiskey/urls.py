@@ -7,7 +7,7 @@ from whiskey import views
 router = DefaultRouter()
 router.register('tags', views.TagViewSet)
 router.register('places', views.PlaceViewSet)
-router.register('whiskey', views.WhiskeyViewSet)
+router.register('whiskeys', views.WhiskeyViewSet)
 
 app_name = 'whiskey'
 
