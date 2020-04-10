@@ -1,3 +1,8 @@
+import tempfile
+import os
+
+from PIL import Image
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -11,6 +16,11 @@ from whiskey.serializers import WhiskeySerializer, WhiskeyDetailSerializer
 
 
 WHISKEY_URL = reverse('whiskey:whiskey-list')
+
+
+def image_upload_url(whiskey_id):
+    """return url for whiskey image upload"""
+    return reverse('whiskey:whiskey-upload-image', args=[whiskey_id])
 
 
 def detail_url(whiskey_id):
@@ -190,3 +200,38 @@ class PrivateWhiskeyAPITest(TestCase):
         self.assertEqual(whiskey.style, payload['style'])
         tags = whiskey.tags.all()
         self.assertEqual(len(tags), 0)
+
+
+class WhiskeyImageUploadTest(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            'SampleUser',
+            'SamplePassword'
+        )
+        self.client.force_authenticate(self.user)
+        self.whiskey = sample_whiskey(user=self.user)
+
+    def teardown(self):
+        self.whiskey.image.delete()
+
+    def test_upload_image_to_whiskey(self):
+        """Test uploaded an image to whiskey"""
+        url = image_upload_url(self.whiskey.id)
+        with tempfile.NamedTemporaryFile(suffix='.jpeg') as ntf:
+            img = Image.new('RGB', (10, 10))
+            img.save(ntf, format='jpeg')
+            ntf.seek(0)
+            res = self.client.post(url, {'image': ntf}, format='multipart')
+            self.whiskey.refresh_from_db()
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            self.assertIn('image', res.data)
+            self.assertTrue(os.path.exists(self.whiskey.image.path))
+
+    def test_upload_image_bad_request(self):
+        """test uploading an invalid image"""
+        url = image_upload_url(self.whiskey.id)
+        res = self.client.post(url, {'image': 'notimage'}, format='multipart')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

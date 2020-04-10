@@ -45,3 +45,12 @@ class WhiskeyDetailSerializer(WhiskeySerializer):
     """Serialize a whiskey detail"""
     places = PlaceSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+
+
+class WhiskeyImageSerializer(serializers.ModelSerializer):
+    """Serialize a whiskey image"""
+
+    class Meta:
+        model = Whiskey
+        fields = ('id', 'image')
+        read_only = ('id',)
