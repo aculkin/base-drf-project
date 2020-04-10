@@ -1,7 +1,17 @@
+import uuid
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,\
                                        PermissionsMixin
 from django.conf import settings
+
+
+def whiskey_image_file_path(instance, filename):
+    """Generate file path for new whiskey image"""
+    ext = filename.split('.')[-1]
+    filename = f'{uuid.uuid4()}.{ext}'
+
+    return os.path.join('uploads/whiskey/', filename)
 
 
 class UserManager(BaseUserManager):
@@ -75,6 +85,7 @@ class Whiskey(models.Model):
     link = models.CharField(max_length=255, blank=True)
     places = models.ManyToManyField('Place')
     tags = models.ManyToManyField('Tag')
+    image = models.ImageField(null=True, upload_to=whiskey_image_file_path)
 
     def __str__(self):
         return self.brand
