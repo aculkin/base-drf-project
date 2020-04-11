@@ -44,9 +44,23 @@ class WhiskeyViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    def _params_to_ints(self, qs):
+        '''convert a list of string ids to a list of integers'''
+        return [int(str_id) for str_id in qs.split(',')]
+
     def get_queryset(self):
         """Retrieve the Whiskeys for the authenticated user"""
-        return self.queryset.filter(user=self.request.user)
+        tags = self.request.query_params.get('tags')
+        places = self.request.query_params.get('places')
+        queryset = self.queryset
+        if tags:
+            tag_ids = self._params_to_ints(tags)
+            queryset = queryset.filter(tags__id__in=tag_ids)
+        if places:
+            places_id = self._params_to_ints(places)
+            queryset = queryset.filter(places__id__in=places_id)
+
+        return queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         """Return appropiate serializer class"""

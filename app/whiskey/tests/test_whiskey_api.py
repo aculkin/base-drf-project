@@ -235,3 +235,47 @@ class WhiskeyImageUploadTest(TestCase):
         res = self.client.post(url, {'image': 'notimage'}, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_filter_whiskey_by_tags(self):
+        """Test returning whiskey with specific tags"""
+        whiskey1 = sample_whiskey(user=self.user, brand='Jack Daniels')
+        whiskey2 = sample_whiskey(user=self.user, brand='WoodFord Reserve')
+        tag1 = sample_tag(user=self.user, name='Bitter')
+        tag2 = sample_tag(user=self.user, name='Sweet')
+        whiskey1.tags.add(tag1)
+        whiskey2.tags.add(tag2)
+        whiskey3 = sample_whiskey(user=self.user, brand='Bud')
+
+        res = self.client.get(
+            WHISKEY_URL,
+            {'tags': f'{tag1.id}, {tag2.id}'}
+        )
+
+        serializer1 = WhiskeySerializer(whiskey1)
+        serializer2 = WhiskeySerializer(whiskey2)
+        serializer3 = WhiskeySerializer(whiskey3)
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+    def test_filter_whiskey_by_places(self):
+        """Test returning whiskey with specific places"""
+        whiskey1 = sample_whiskey(user=self.user, brand='Jack Daniels')
+        whiskey2 = sample_whiskey(user=self.user, brand='WoodFord Reserve')
+        place1 = sample_place(user=self.user, name='BoilerMaker')
+        place2 = sample_place(user=self.user, name='Bjs')
+        whiskey1.places.add(place1)
+        whiskey2.places.add(place2)
+        whiskey3 = sample_whiskey(user=self.user, brand='Bud')
+
+        res = self.client.get(
+            WHISKEY_URL,
+            {'places': f'{place1.id}, {place2.id}'}
+        )
+
+        serializer1 = WhiskeySerializer(whiskey1)
+        serializer2 = WhiskeySerializer(whiskey2)
+        serializer3 = WhiskeySerializer(whiskey3)
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
