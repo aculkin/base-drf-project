@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Place
+from core.models import Place, Whiskey
 
 from whiskey.serializers import PlaceSerializer
 
@@ -80,3 +80,46 @@ class PrivatePlaceAPITest(TestCase):
         res = self.client.post(PLACE_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_places_assigned_to_whiskey(self):
+        """Test filtering places by those assigned to whiskey"""
+        place1 = Place.objects.create(
+            user=self.user, name='Boiler Maker'
+        )
+        place2 = Place.objects.create(
+            user=self.user, name="BJ's Brewery"
+        )
+        whiskey = Whiskey.objects.create(
+            brand='Woodford Reserve',
+            style='Bourbon',
+            user=self.user
+        )
+        whiskey.places.add(place1)
+
+        res = self.client.get(PLACE_URL, {'assigned_only': 1})
+
+        serializer1 = PlaceSerializer(place1)
+        serializer2 = PlaceSerializer(place2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
+
+    def test_retrieve_places_assigned_unique(self):
+        '''Test filtering places by assigned returns unique items'''
+        place = Place.objects.create(user=self.user, name='BoilerMaker')
+        Place.objects.create(user=self.user, name='BJs')
+        whiskey1 = Whiskey.objects.create(
+            user=self.user,
+            brand='Woodford',
+            style='Whiskey'
+        )
+        whiskey1.places.add(place)
+        whiskey2 = Whiskey.objects.create(
+            user=self.user,
+            brand='Mitchers',
+            style='Bourbon'
+        )
+        whiskey2.places.add(place)
+
+        res = self.client.get(PLACE_URL, {'assigned_only': 1})
+
+        self.assertEqual(len(res.data), 1)
